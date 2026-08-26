@@ -1,0 +1,49 @@
+name: Scrape IPO data
+
+on:
+  schedule:
+    # Times are UTC. 03:30–12:30 UTC = 09:00–18:00 IST, every 30 min, Mon–Fri.
+    # GitHub queues cron jobs on shared runners, so expect a few minutes' drift.
+    - cron: "0,30 3-12 * * 1-5"
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+# stop two runs from pushing to the same branch at once
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write       # required to commit docs/ipos.json back
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Scrape
+        run: python scrape.py
+
+      - name: Commit snapshot
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ipos.json symbols.json
+          # nothing changed on a quiet day — that is not a failure
+          if git diff --quiet --staged; then
+            echo "no change"
+            exit 0
+          fi
+          git commit -m "data: $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # another run may have pushed while we scraped
+          git pull --rebase --autostash || true
+          git push
