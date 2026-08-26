@@ -1,0 +1,4 @@
+beautifulsoup4>=4.12
+selenium>=4.20
+webdriver-manager>=4.0
+requests>=2.31
