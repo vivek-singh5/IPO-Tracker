@@ -4,7 +4,7 @@ on:
   schedule:
     # Times are UTC. 03:30–12:30 UTC = 09:00–18:00 IST, every 30 min, Mon–Fri.
     # GitHub queues cron jobs on shared runners, so expect a few minutes' drift.
-    - cron: "0,30 3-12 * * 1-5"
+    - cron: "17,47 3-12 * * 1-5"
   workflow_dispatch:        # lets you run it by hand from the Actions tab
 
 # stop two runs from pushing to the same branch at once
