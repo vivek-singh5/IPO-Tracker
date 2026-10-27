@@ -3,8 +3,8 @@ name: Scrape IPO data
 on:
   schedule:
     # Times are UTC. 03:30–12:30 UTC = 09:00–18:00 IST, every 30 min, Mon–Fri.
-    # GitHub queues cron jobs on shared runners, so expect a few minutes' drift.
-    - cron: "0,30 3-12 * * 1-5"
+    # Minutes are off :00/:30 on purpose: GitHub drops most runs at busy slots.
+    - cron: "13,43 3-12 * * 1-5"
   workflow_dispatch:        # lets you run it by hand from the Actions tab
 
 # stop two runs from pushing to the same branch at once
